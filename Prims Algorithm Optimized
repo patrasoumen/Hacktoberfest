@@ -1,0 +1,70 @@
+/*
+Time Complexity : O((E+V)*LogV) = O(ELogV)
+Space Complexity : O(V) + O(E)
+*/
+
+
+#include <bits/stdc++.h>
+typedef  long long int ll;
+
+using namespace std;
+
+int vis[10000+1]={0};
+std::vector<pair<int,int>> adj[10000+1];
+
+void solve()
+{
+    int V,E;
+    cin>>V>>E;
+    
+    for (int i = 0; i < E; ++i)
+    {
+        int a,b,w;
+        cin>>a>>b>>w;
+        adj[a].push_back({b,w});
+        //for bidirectional edge
+        adj[b].push_back({a,w});
+    }
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;//inserting the pairs such that the node with minimum distance is at the top.
+    vector<bool> mst(V,false);
+    vector<int> dist(V,INT_MAX);
+    vector<int> parent(V,-1);
+    parent[0]=-1;
+    dist[0]=0;
+    pq.push({0,0});
+    int sum=0;
+    while(!pq.empty())
+    {
+        int node=pq.top().second;
+        pq.pop();
+        if(!mst[node])//this is the optimization, check if the node is already in the tree or not.
+        {
+            sum+=dist[node];
+            mst[node]=true;
+            for(auto child:adj[node])
+            {
+                if(!mst[child.first] && dist[child.first]>child.second)
+                {
+                    dist[child.first]=child.second;
+                    parent[child.first]=node;
+                    pq.push({child[1],child.first});
+                }
+            }
+        }
+    }
+    cout<<"total weight of mst is "<<sum<<endl;
+    for(int i=0;i<V;i++)
+        cout<<parent[i]<<"-"<<i<<endl;
+
+}
+
+int main(){
+	ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t;
+    t=1;
+    while(t--)
+    	{
+    		solve();
+    	}  
+}
